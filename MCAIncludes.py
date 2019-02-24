@@ -127,7 +127,7 @@ def LoadImage(image):
     lastCol = rImage[:, -1]
     cImage = np.column_stack([firstCol, rImage, lastCol])
     row, col = cImage.shape
-        return [row, col, cImage]
+    return [row, col, cImage]
 
 
 ############# Procedure: Extract Plateuas ##########################

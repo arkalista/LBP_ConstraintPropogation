@@ -227,7 +227,7 @@ def getMaximaNodeID(MaximaRefereces, plateutree, PointIndex, activeNodeID):
 # Output:
 # Description:
 # Take one more argument for step size in the function
-def UpdateTreeDepth_Minima(nodeID, MinimaTree):
+def UpdateTreeDepth_Minima(nodeID, MinimaTree, stepSize=1):
     activeQueue = queue.Queue()
     passiveQueue = queue.Queue()
 
@@ -256,8 +256,8 @@ def UpdateTreeDepth_Minima(nodeID, MinimaTree):
                     if (MinimaTree[nodeID][0][0] == activeNodeID):
                         insertCheck = 1
                         for i in range(0, len(MinimaTree[nodeID])):
-                            MinimaTree[nodeID][i][1] = activeLevel + 1
-                            #MinimaTree[nodeID][i][1] = activeLevel + step_size
+                            #MinimaTree[nodeID][i][1] = activeLevel + 1
+                            MinimaTree[nodeID][i][1] = activeLevel + stepSize
                     if (insertCheck == 1):
                         passiveQueue.put(nodeID)
 

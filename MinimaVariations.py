@@ -124,9 +124,11 @@ def GenerateImageVariations_Minima(image):
     minForest_L4_Parallel = []
     for index, minTree in enumerate(minForest_Parallel):
         maxDepth = []
+        maxDepthNodeID = []
         rootNodeID = -1
         for key in minTree.keys():
             maxDepth.append(minTree[key][0][1])
+            maxDepthNodeID.append(minTree[key][0][0])
             if minTree[key][0][0] == 0:
                 rootNodeID = key
 
@@ -137,16 +139,23 @@ def GenerateImageVariations_Minima(image):
         pprint(rootNodeID)
         stepSize = 1
         # We are taking the max value because at the depth of the true will be a value equal to depth Since we initialize the root with 0 and increment with +1 at each step
-        maxDepthVal = max(maxDepth)
+        treeDepth = max(maxDepth)
+        rootValueFromTreeDepth = max(maxDepth)
+
+        treeDepth_Ind = np.argmax(maxDepth)
+        treeDepthNodeID = maxDepthNodeID[treeDepth_Ind]
+
+        rootValueFromPass1Image = pass1_Image_Minima[plateutree[treeDepthNodeID][0]]
+
         minimaActualValue = plateutreeVal[rootNodeID]
-        MaxValueforMinima  = (255/stepSize) - abs(maxDepthVal-minimaActualValue)
+        MaxValueforMinima  = (255/stepSize) - abs(treeDepth-minimaActualValue)
 
         minTree_L2 = copy.deepcopy(minTree)
         minTree_L3 = copy.deepcopy(minTree)
         minTree_L4 = copy.deepcopy(minTree)
 
         # Initializing the tree root with the Max Depth Value
-        minTree_L2[rootNodeID][0][1] = maxDepthVal
+        minTree_L2[rootNodeID][0][1] = rootValueFromTreeDepth
         minTree_L2 = UpdateTreeDepth_Minima(rootNodeID, minTree_L2)
         minForest_L2_Parallel.append(minTree_L2)
 
@@ -220,8 +229,8 @@ print(type(image))
 print(image.shape)
 print(image)
 
-lena = scipy.misc.imread('lena.png', mode='F')
-image = scipy.misc.imresize(lena, (64, 64))
+#lena = scipy.misc.imread('lena.png', mode='F')
+#image = scipy.misc.imresize(lena, (64, 64))
 
 ImgLst = GenerateImageVariations_Minima(image)
 

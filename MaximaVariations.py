@@ -136,11 +136,11 @@ def GenerateImageVariations_Maxima(image):
         pprint(maxTree)
         pprint(rootNodeID)
         # We are subtracting 255 because root of the tree is initialized with 255 and at the depth of the true will be a value equal to 255 - depth of the tree
-        maxDepthVal = 255 - min(maxDepth)
+        treeDepth = 255 - min(maxDepth)
         rootValueFromTreeDepth = min(maxDepth)
         stepSize = 1
-        minimaActualValue = plateutreeVal[rootNodeID]
-        MaxValueforMinima  = (255/stepSize) - abs(maxDepthVal-minimaActualValue)
+        maximaActualValue = plateutreeVal[rootNodeID]
+        MaxValueforMinima  = (255/stepSize) - abs(treeDepth - maximaActualValue)
 
         maxTree_L2 = copy.deepcopy(maxTree)
         maxTree_L3 = copy.deepcopy(maxTree)
@@ -152,7 +152,7 @@ def GenerateImageVariations_Maxima(image):
         maxForest_L2_Parallel.append(maxTree_L2)
 
         # Initializing the tree root with the Actual Value of Minima
-        maxTree_L3[rootNodeID][0][1] = minimaActualValue
+        maxTree_L3[rootNodeID][0][1] = maximaActualValue
         maxTree_L3 = UpdateTreeDepth_Minima(rootNodeID, maxTree_L3)
         maxForest_L3_Parallel.append(maxTree_L3)
 

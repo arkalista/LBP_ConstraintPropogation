@@ -124,9 +124,11 @@ def GenerateImageVariations_Maxima(image):
     maxForest_L4_Parallel = []
     for index, maxTree in enumerate(maxForest_Parallel):
         maxDepth = []
+        maxDepthNodeID = []
         rootNodeID = -1
         for key in maxTree.keys():
             maxDepth.append(maxTree[key][0][1])
+            maxDepthNodeID.append(maxTree[key][0][0])
             if maxTree[key][0][0] == 0:
                 rootNodeID = key
 
@@ -135,12 +137,21 @@ def GenerateImageVariations_Maxima(image):
         # with root node initialzed to actual value of the minima.
         pprint(maxTree)
         pprint(rootNodeID)
-        # We are subtracting 255 because root of the tree is initialized with 255 and at the depth of the true will be a value equal to 255 - depth of the tree
-        treeDepth = 255 - min(maxDepth)
-        rootValueFromTreeDepth = min(maxDepth)
         stepSize = 1
+
+        # We are taking the min value because at the depth of the true will be a value equal to 255 - depth Since we initialize the root with 255 and decrement with -1 at each step
+        rootValueFromTreeDepth = min(maxDepth)
+
+
+        # We take the node ID of the Pixel at the Depth of the tree and get it's subsequent index in the image and use the value from pass 1 images, this will be minima value
+        # influenced from the global constraints
+        treeDepth_Ind = np.argmin(maxDepth)
+        treeDepthNodeID = maxDepthNodeID[treeDepth_Ind]
+        rootValueFromPass1Image = pass1_Image_Maxima[plateutree[treeDepthNodeID][0]]
+
+        # we take the root node id and take it's subsequent index in the image and use the value from original image
         maximaActualValue = plateutreeVal[rootNodeID]
-        MaxValueforMinima  = (255/stepSize) - abs(treeDepth - maximaActualValue)
+
 
         maxTree_L2 = copy.deepcopy(maxTree)
         maxTree_L3 = copy.deepcopy(maxTree)
@@ -148,42 +159,42 @@ def GenerateImageVariations_Maxima(image):
 
         # Initializing the tree root with the Max Depth Value
         maxTree_L2[rootNodeID][0][1] = rootValueFromTreeDepth
-        maxTree_L2 = UpdateTreeDepth_Minima(rootNodeID, maxTree_L2)
+        maxTree_L2 = UpdateTreeDepth_Maxima(rootNodeID, maxTree_L2)
         maxForest_L2_Parallel.append(maxTree_L2)
 
-        # Initializing the tree root with the Actual Value of Minima
-        maxTree_L3[rootNodeID][0][1] = maximaActualValue
-        maxTree_L3 = UpdateTreeDepth_Minima(rootNodeID, maxTree_L3)
+        # Initializing the tree root with the Value Derived from Global Constraints
+        maxTree_L3[rootNodeID][0][1] = rootValueFromPass1Image
+        maxTree_L3 = UpdateTreeDepth_Maxima(rootNodeID, maxTree_L3)
         maxForest_L3_Parallel.append(maxTree_L3)
 
-        # Initializing the tree root with the Value derived from Depth, Actual Minima and Step Size
-        maxTree_L4[rootNodeID][0][1] = MaxValueforMinima
-        maxTree_L4 = UpdateTreeDepth_Minima(rootNodeID, maxTree_L4, stepSize)
+        # Initializing the tree root with the Actual Value of Maxima
+        maxTree_L4[rootNodeID][0][1] = maximaActualValue
+        maxTree_L4 = UpdateTreeDepth_Maxima(rootNodeID, maxTree_L4, stepSize)
         maxForest_L4_Parallel.append(maxTree_L4)
 
     #################### Code for Image Generation _L2 #################
     start_time = time.time()
 
-    PassImages_L2 = CreateImageFromTree_Minima(maxForest_L2_Parallel, row, col, plateutree)
-    pass2_Image_Minima = PassImages_L2[0]
-    pass2_LevelImage_Minima = PassImages_L2[1]
+    PassImages_L2 = CreateImageFromTree_Maxima(maxForest_L2_Parallel, row, col, plateutree)
+    pass2_Image_Maxima = PassImages_L2[0]
+    pass2_LevelImage_Maxima = PassImages_L2[1]
 
-    pprint(pass2_Image_Minima)
-    pprint(pass2_LevelImage_Minima)
+    pprint(pass2_Image_Maxima)
+    pprint(pass2_LevelImage_Maxima)
 
-    PassImages_L3 = CreateImageFromTree_Minima(maxForest_L3_Parallel, row, col, plateutree)
-    pass3_Image_Minima = PassImages_L3[0]
-    pass3_LevelImage_Minima = PassImages_L3[1]
+    PassImages_L3 = CreateImageFromTree_Maxima(maxForest_L3_Parallel, row, col, plateutree)
+    pass3_Image_Maxima = PassImages_L3[0]
+    pass3_LevelImage_Maxima = PassImages_L3[1]
 
-    pprint(pass3_Image_Minima)
-    pprint(pass3_LevelImage_Minima)
+    pprint(pass3_Image_Maxima)
+    pprint(pass3_LevelImage_Maxima)
 
-    PassImages_L4 = CreateImageFromTree_Minima(maxForest_L4_Parallel, row, col, plateutree)
-    pass4_Image_Minima = PassImages_L4[0]
-    pass4_LevelImage_Minima = PassImages_L4[1]
+    PassImages_L4 = CreateImageFromTree_Maxima(maxForest_L4_Parallel, row, col, plateutree)
+    pass4_Image_Maxima = PassImages_L4[0]
+    pass4_LevelImage_Maxima = PassImages_L4[1]
 
-    pprint(pass4_Image_Minima)
-    pprint(pass4_LevelImage_Minima)
+    pprint(pass4_Image_Maxima)
+    pprint(pass4_LevelImage_Maxima)
 
     TotalParallelExecutionTime = TotalParallelExecutionTime + ((time.time() - start_time))
 
@@ -191,7 +202,7 @@ def GenerateImageVariations_Maxima(image):
     start_time = time.time()
 
     originalLBP = GenerateLBPImage(image, NEIGHBORS)
-    pass1LBP = GenerateLBPImage(pass1_Image_Minima, NEIGHBORS)
+    pass1LBP = GenerateLBPImage(pass1_Image_Maxima, NEIGHBORS)
 
     if ((originalLBP == pass1LBP).all()):
         print("Success L1 generated")
@@ -204,7 +215,7 @@ def GenerateImageVariations_Maxima(image):
     start_time = time.time()
 
     originalLBP = GenerateLBPImage(image, NEIGHBORS)
-    pass2LBP = GenerateLBPImage(pass2_Image_Minima, NEIGHBORS)
+    pass2LBP = GenerateLBPImage(pass2_Image_Maxima, NEIGHBORS)
 
     if ((originalLBP == pass2LBP).all()):
         print("Success L2 generated")
@@ -212,7 +223,7 @@ def GenerateImageVariations_Maxima(image):
         print("Failure L2 generated")
 
 
-    return [pass1_Image_Minima, pass2_Image_Minima, pass3_Image_Minima, pass4_Image_Minima]
+    return [pass1_Image_Maxima, pass2_Image_Maxima, pass3_Image_Maxima, pass4_Image_Maxima]
 
 
 
@@ -224,12 +235,12 @@ print(image)
 lena = scipy.misc.imread('lena.png', mode='F')
 image = scipy.misc.imresize(lena, (64, 64))
 
-ImgLst = GenerateImageVariations_Minima(image)
+ImgLst = GenerateImageVariations_Maxima(image)
 
-pass1_Image_Minima=ImgLst[0]
-pass2_Image_Minima=ImgLst[1]
-pass3_Image_Minima=ImgLst[2]
-pass4_Image_Minima=ImgLst[3]
+pass1_Image_Maxima=ImgLst[0]
+pass2_Image_Maxima=ImgLst[1]
+pass3_Image_Maxima=ImgLst[2]
+pass4_Image_Maxima=ImgLst[3]
 
 imageLabel = 1
 
@@ -243,24 +254,24 @@ ax.set_axis_off()
 ax.imshow(image, cmap=mpl.cm.gray)
 
 ax = plt.subplot(232)
-ax.set_title("Minima Initialized with 0", fontsize=7)
+ax.set_title("Maxima Initialized with 0", fontsize=7)
 ax.set_axis_off()
-ax.imshow(pass1_Image_Minima, cmap=mpl.cm.gray)
+ax.imshow(pass1_Image_Maxima, cmap=mpl.cm.gray)
 
 ax = plt.subplot(233)
-ax.set_title("Minima Initialized with Tree Depth", fontsize=7)
+ax.set_title("Maxima Initialized with Tree Depth", fontsize=7)
 ax.set_axis_off()
-ax.imshow(pass2_Image_Minima, cmap=mpl.cm.gray)
+ax.imshow(pass2_Image_Maxima, cmap=mpl.cm.gray)
 
 ax = plt.subplot(234)
-ax.set_title("Minima Initialized with Actual Value", fontsize=7)
+ax.set_title("Maxima Initialized with Actual Value", fontsize=7)
 ax.set_axis_off()
-ax.imshow(pass3_Image_Minima, cmap=mpl.cm.gray)
+ax.imshow(pass3_Image_Maxima, cmap=mpl.cm.gray)
 
 ax = plt.subplot(235)
-ax.set_title("Minima Initialized with Upper Bound", fontsize=7)
+ax.set_title("Maxima Initialized with Upper Bound", fontsize=7)
 ax.set_axis_off()
-ax.imshow(pass4_Image_Minima, cmap=mpl.cm.gray)
+ax.imshow(pass4_Image_Maxima, cmap=mpl.cm.gray)
 
 
 plt.show()

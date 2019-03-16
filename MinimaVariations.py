@@ -138,17 +138,19 @@ def GenerateImageVariations_Minima(image):
         pprint(minTree)
         pprint(rootNodeID)
         stepSize = 1
+
         # We are taking the max value because at the depth of the true will be a value equal to depth Since we initialize the root with 0 and increment with +1 at each step
-        treeDepth = max(maxDepth)
         rootValueFromTreeDepth = max(maxDepth)
 
+        # We take the node ID of the Pixel at the Depth of the tree and get it's subsequent index in the imaege and use the value from pass 1 images, this will be minima value
+        # influenced from the global constraints
         treeDepth_Ind = np.argmax(maxDepth)
         treeDepthNodeID = maxDepthNodeID[treeDepth_Ind]
-
         rootValueFromPass1Image = pass1_Image_Minima[plateutree[treeDepthNodeID][0]]
 
+        # we take the root node id and take it's subsequent index in the image and use the value from original image
         minimaActualValue = plateutreeVal[rootNodeID]
-        MaxValueforMinima  = (255/stepSize) - abs(treeDepth-minimaActualValue)
+
 
         minTree_L2 = copy.deepcopy(minTree)
         minTree_L3 = copy.deepcopy(minTree)
@@ -159,13 +161,13 @@ def GenerateImageVariations_Minima(image):
         minTree_L2 = UpdateTreeDepth_Minima(rootNodeID, minTree_L2)
         minForest_L2_Parallel.append(minTree_L2)
 
-        # Initializing the tree root with the Actual Value of Minima
-        minTree_L3[rootNodeID][0][1] = minimaActualValue
+        # Initializing the tree root with the Value Derived from Global Constraints
+        minTree_L3[rootNodeID][0][1] = rootValueFromPass1Image
         minTree_L3 = UpdateTreeDepth_Minima(rootNodeID, minTree_L3)
         minForest_L3_Parallel.append(minTree_L3)
 
-        # Initializing the tree root with the Value derived from Depth, Actual Minima and Step Size
-        minTree_L4[rootNodeID][0][1] = MaxValueforMinima
+        # Initializing the tree root with the Actual Value of Minima
+        minTree_L4[rootNodeID][0][1] = minimaActualValue
         minTree_L4 = UpdateTreeDepth_Minima(rootNodeID, minTree_L4, stepSize)
         minForest_L4_Parallel.append(minTree_L4)
 
@@ -229,8 +231,8 @@ print(type(image))
 print(image.shape)
 print(image)
 
-#lena = scipy.misc.imread('lena.png', mode='F')
-#image = scipy.misc.imresize(lena, (64, 64))
+lena = scipy.misc.imread('lena.png', mode='F')
+image = scipy.misc.imresize(lena, (64, 64))
 
 ImgLst = GenerateImageVariations_Minima(image)
 
@@ -261,12 +263,12 @@ ax.set_axis_off()
 ax.imshow(pass2_Image_Minima, cmap=mpl.cm.gray)
 
 ax = plt.subplot(234)
-ax.set_title("Minima Initialized with Actual Value", fontsize=7)
+ax.set_title("Minima Initialized with Value Derived from Global Constraints", fontsize=7)
 ax.set_axis_off()
 ax.imshow(pass3_Image_Minima, cmap=mpl.cm.gray)
 
 ax = plt.subplot(235)
-ax.set_title("Minima Initialized with Upper Bound", fontsize=7)
+ax.set_title("Minima Initialized with Priors", fontsize=7)
 ax.set_axis_off()
 ax.imshow(pass4_Image_Minima, cmap=mpl.cm.gray)
 

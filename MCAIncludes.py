@@ -242,6 +242,7 @@ def getMaximaNodeID(MaximaRefereces, plateutree, PointIndex, activeNodeID):
 # Description:
 # Take one more argument for step size in the function
 def UpdateTreeDepth_Minima(nodeID, MinimaTree, stepSize =1):
+
     activeQueue = queue.Queue()
     passiveQueue = queue.Queue()
 

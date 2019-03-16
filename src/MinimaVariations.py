@@ -16,7 +16,7 @@ from MCAIncludes import *
 #print(image.shape)
 
 # Load Image from Current Directory
-lena = scipy.misc.imread('lena.png', mode='F')
+lena = scipy.misc.imread('../assets/lena.png', mode='F')
 
 # Resize
 image = scipy.misc.imresize(lena, (64, 64))

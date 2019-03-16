@@ -4,8 +4,9 @@ import numpy as np
 
 ############# Procedure: HeaviSide : Threshold Function ##########################
 # Input:
+#   h is the difference of the pixel with it's neighbour
 # Output:
-# Description:
+#   Returns the flag for the constraint
 
 def HeaviSide(h):
     if (h == 0):
@@ -18,8 +19,9 @@ def HeaviSide(h):
 
 ############# Procedure: LBP for a given pixel value ##########################
 # Input:
+#   h is the difference of the pixel with it's neighbour
 # Output:
-# Description:
+#   Returns the flag for the constraint
 
 
 def lbp(h):
@@ -32,29 +34,37 @@ def lbp(h):
 
 
 # Input:
+#   pixel index p q
+#   NEIGHBORS an array of off set => ([[0, 1], [1, 1], [1, 0], [1, -1], [0, -1], [-1, -1], [-1, 0], [-1, +1]])
+#   cImage is the 2d matrix, the image for which we want to calculate the lbp
 # Output:
-# Description:
+#   return a list of lbpinfo
+#   lbpinfo : p,q,pixel value, lbppattern_list, constraint_list
 
-def calculateLBP(row, col, NEIGHBORS, cImage):
-    h1 = NEIGHBORS[:, 0] + row
-    h2 = NEIGHBORS[:, 1] + col
-    pixel = cImage[row, col]
+# Todo's : Create a datastructure for lbpinfo and encode the output in it for further use
+
+def calculateLBP(p, q, NEIGHBORS, cImage):
+    h1 = NEIGHBORS[:, 0] + p
+    h2 = NEIGHBORS[:, 1] + q
+    pixel = cImage[p, q]
     pixelDiff = [HeaviSide(int(cImage[h1[i], h2[i]]) - int(pixel)) for i in range(8)]
     pixelLbp = [lbp(int(cImage[h1[i], h2[i]]) - int(pixel)) for i in range(8)]
     pixelLbp = reversed(pixelLbp)
     pixelLbp = int(''.join(str(e) for e in pixelLbp), 2)
-    return [row, col, pixel, pixelLbp, pixelDiff]
+    return [p, q, pixel, pixelLbp, pixelDiff]
 
 
 ############# Procedure: Check Padded Pixels in the Image ##########################
 # Input:
-# Output:
-# Description:
+#   NEIGHBORS an array of off set => ([[0, 1], [1, 1], [1, 0], [1, -1], [0, -1], [-1, -1], [-1, 0], [-1, +1]])
+#   NEIGHBORS_OFFSET is an index to NEIGHBORS array, values can be in range 0 to 7
 
-def validateNPI(i, m, n, NEIGHBORS, p, q):
+# Output:
+
+def validateNPI(NEIGHBORS_OFFSET, m, n, NEIGHBORS, p, q):
     try:
-        x = m + NEIGHBORS[i][0]
-        y = n + NEIGHBORS[i][1]
+        x = m + NEIGHBORS[NEIGHBORS_OFFSET][0]
+        y = n + NEIGHBORS[NEIGHBORS_OFFSET][1]
         if x > 0 and x < p - 1 and y > 0 and y < q - 1:
             return (x, y)
         else:
@@ -66,10 +76,12 @@ def validateNPI(i, m, n, NEIGHBORS, p, q):
 
 ############# Procedure: Creating Dictionary for Plato Pixels ##########################
 # Input:
+#   PixelLBP is a dictionary
+#   NEIGHBORS an array of off set => ([[0, 1], [1, 1], [1, 0], [1, -1], [0, -1], [-1, -1], [-1, 0], [-1, +1]])
+#   (p,q) is the pixel index
+#   constraint => {0:Equal, 1:Superior, -1: Inferior}
 # Output:
-# Description:
-# returns a dictionary {key:(x,y) value:[(p,q)]} p,q => constraint neighbour of x,y
-# constaraint => {0:Equal, 1:Superior, -1: Inferior}
+#   returns a dictionary {key:(p,q) value:[(xn,yn)]} xn,yn => constraint neighbour of p,q
 
 def getConstNeigh(PixelLBP, NEIGHBORS, p, q, constraint):
     k = 0
@@ -139,6 +151,7 @@ def ExtractPlateau(image, platoDict, conMatplateaus):
     minima = []
     maxima = []
     plateutree = {}
+    plateutreeVal = {}
     PointIndex = {}
 
     row, col = image.shape
@@ -166,6 +179,7 @@ def ExtractPlateau(image, platoDict, conMatplateaus):
                         activeQueue.put(point)
 
             plateutree[TreeID] = plat
+            plateutreeVal[TreeID] = image[plat[0]]
             if (isMinimaTree(plat, conMatplateaus)):
                 minima.append(TreeID)
 
@@ -173,7 +187,7 @@ def ExtractPlateau(image, platoDict, conMatplateaus):
                 maxima.append(TreeID)
 
             TreeID = TreeID + 1
-    return [platopixel, plateutree, PointIndex, minima, maxima]
+    return [platopixel, plateutree, PointIndex, minima, maxima, plateutreeVal]
 
 
 
@@ -227,7 +241,8 @@ def getMaximaNodeID(MaximaRefereces, plateutree, PointIndex, activeNodeID):
 # Output:
 # Description:
 # Take one more argument for step size in the function
-def UpdateTreeDepth_Minima(nodeID, MinimaTree, stepSize=1):
+def UpdateTreeDepth_Minima(nodeID, MinimaTree, stepSize =1):
+
     activeQueue = queue.Queue()
     passiveQueue = queue.Queue()
 
@@ -269,7 +284,7 @@ def UpdateTreeDepth_Minima(nodeID, MinimaTree, stepSize=1):
 # Output:
 # Description:
 
-def expandTree_Minima(minimaIndex, MinimaRefereces, plateutree, PointIndex):
+def expandTree_Minima(minimaIndex, MinimaRefereces, plateutree, PointIndex, stepSize =1):
     activeQueue = queue.Queue()
     passiveQueue = queue.Queue()
 
@@ -306,16 +321,16 @@ def expandTree_Minima(minimaIndex, MinimaRefereces, plateutree, PointIndex):
                     # Check the level and then extract a subtree , update level and update parents
                     if minNodeID in MinimaTree.keys():
                         minNodeLevel = MinimaTree[minNodeID][0][1]
-                        if minNodeLevel < activeLevel + 1:
+                        if minNodeLevel < activeLevel + stepSize:
                             # Updating Tree Level for all the branches and ParentID
                             for i in range(0, len(MinimaTree[minNodeID])):
                                 MinimaTree[minNodeID][i][0] = activeNodeID
-                                MinimaTree[minNodeID][i][1] = activeLevel + 1
+                                MinimaTree[minNodeID][i][1] = activeLevel + stepSize
                             # Updating SubTree Levels
                             MinimaTree = UpdateTreeDepth_Minima(minNodeID, MinimaTree)
                     else:
                         MinimaTree[minNodeID] = []
-                        MinimaTree[minNodeID].append([activeNodeID, activeLevel + 1])
+                        MinimaTree[minNodeID].append([activeNodeID, activeLevel + stepSize])
 
     return MinimaTree
 
@@ -325,7 +340,7 @@ def expandTree_Minima(minimaIndex, MinimaRefereces, plateutree, PointIndex):
 # Output:
 # Description:
 
-def UpdateTreeDepth_Maxima(nodeID, MaximaTree):
+def UpdateTreeDepth_Maxima(nodeID, MaximaTree, stepSize =1):
     activeQueue = queue.Queue()
     passiveQueue = queue.Queue()
 
@@ -354,7 +369,7 @@ def UpdateTreeDepth_Maxima(nodeID, MaximaTree):
                     if (MaximaTree[nodeID][0][0] == activeNodeID):
                         insertCheck = 1
                         for i in range(0, len(MaximaTree[nodeID])):
-                            MaximaTree[nodeID][i][1] = activeLevel - 1
+                            MaximaTree[nodeID][i][1] = activeLevel - stepSize
                     if (insertCheck == 1):
                         passiveQueue.put(nodeID)
 

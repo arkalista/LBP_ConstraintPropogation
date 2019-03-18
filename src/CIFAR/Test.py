@@ -16,7 +16,7 @@ def show_imgs(X):
 
 
 (x_train, y_train), (x_test, y_test) = cifar10.load_data()
-show_imgs(x_test[:16])
+#show_imgs(x_test[:16])
 
 import keras
 from keras.models import Sequential

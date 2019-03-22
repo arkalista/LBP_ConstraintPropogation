@@ -24,3 +24,6 @@ gen_cmd_line.py
 *.zip
 src/config.py
 *.log
+
+# Data files
+DATA/

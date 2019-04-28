@@ -10,14 +10,14 @@ Data augmentation techniques have been employed to overcome the problem of model
 
 If you are using the code provided here in a publication, please cite our paper:
 
-  @inproceedings{syed2015leveraging,
-    title={Leveraging mutual information in local descriptions: from local binary patterns to the image},
-    author={Syed, Tahir Q and Behlim, Sadaf I and Merchant, Alishan K and Thomas, Alexis and Khan, Furqan M},
-    booktitle={International Conference on Image Analysis and Processing},
-    pages={239--251},
-    year={2015},
-    organization={Springer}
-  }
+    @InProceedings{syed2015leveraging,
+      title={Leveraging mutual information in local descriptions: from local binary patterns to the image},
+      author={Syed, Tahir Q and Behlim, Sadaf I and Merchant, Alishan K and Thomas, Alexis and Khan, Furqan M},
+      booktitle={International Conference on Image Analysis and Processing},
+      pages={239--251},
+      year={2015},
+      organization={Springer}
+    }
   
 ### Installing 
 

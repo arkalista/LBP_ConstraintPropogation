@@ -10,13 +10,13 @@ Data augmentation techniques have been employed to overcome the problem of model
 
 If you are using the code provided here in a publication, please cite our paper:
 
-    @InProceedings{syed2015leveraging,
-      title={Leveraging mutual information in local descriptions: from local binary patterns to the image},
-      author={Syed, Tahir Q and Behlim, Sadaf I and Merchant, Alishan K and Thomas, Alexis and Khan, Furqan M},
-      booktitle={International Conference on Image Analysis and Processing},
-      pages={239--251},
-      year={2015},
-      organization={Springer}
+    @inproceedings{merchant2018appearance,
+      title={Appearance-based data augmentation for image datasets using contrast preserving sampling},
+      author={Merchant, Alishan and Syed, Tahir and Khan, Behraj and Munir, Rumaisah},
+      booktitle={2018 24th International Conference on Pattern Recognition (ICPR)},
+      pages={1235--1240},
+      year={2018},
+      organization={IEEE}
     }
   
 ### Installing 
@@ -24,18 +24,29 @@ If you are using the code provided here in a publication, please cite our paper:
 
 ### Generating Image 
 
+1. To generate the augmented images, place the source image in assets folder, for instance ./assets/lenna.png
+2. To generate image variations from local minima, call the following:
+    python Generator.py --type minima --input lenna.png
+3. To generate image variations from local maxima, call the following:
+    python Generator.py --type maxima --input lenna.png
+4. To generate image variations from both minima and maxima, call the following:
+    python Generator.py --type all --input lenna.png
+5. There will be an output image in the assets folder with lenna_minima.png / lenna_maxima.png / lenna_all.png
+
+Note : All the RGB images are converted to GS first and scaled to 64x64, the scaling is done due to performance.
+
+### Sample output on the Lenna Image
+
 Variations Generated from Local Minima Expansion
 ![Local Minima Expansion](https://raw.githubusercontent.com/arkalista/LBP_ConstraintPropogation/master/assets/lenna_MinimaVariations.png)
 
 Variations Generated from Local Maxima Expansion
 ![Local Maxima Expansion](https://raw.githubusercontent.com/arkalista/LBP_ConstraintPropogation/master/assets/lenna_MaximaVariations.png)
 
-
 ### Precomputed Results on CIFAR-10
-If you want to compare your method with HED and need the precomputed results, you can download them from (http://vcl.ucsd.edu/hed/eval_results.tar).
 
 
-### Acknowledgment: 
-
+### Acknowledgment:
+I'd like to acknoweldge all the contributors who have worked on this repository from time to time, my special thanks to Prof Tahir Syed for his contribution to the idea and Sadaf Behlim, Alexis Thomas, Yameen Malik & Zaid Memon for their contribution in helping me write this code. 
 
 If you encounter any issue running the code, or come across somthing you want to add, please do let me know. 

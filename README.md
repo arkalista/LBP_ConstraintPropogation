@@ -22,6 +22,12 @@ If you are using the code provided here in a publication, please cite our paper:
   
 ### Installing 
 
+1. Run the git clone command to copy the contents of folder to your local system, for instance : 
+git clone git@github.com:m-alishan/LBP_ConstraintPropogation.git
+2. navigate into the src directory, where you can see the requirements.txt file
+cd LBP_ConstraintPropogation/src
+3. Run the following command to install all the dependencies required to run the code
+pip install -r requirements.txt
 
 ### Generating Image 
 
@@ -49,9 +55,15 @@ Variations Generated from Local Maxima Expansion
 </p>
 
 ### Precomputed Results on CIFAR-10
-
+You can find precomputed results on CIFAR-10 in the CIFAR/DATA directory, following is the structure
+LBP_ConstraintPropogation/src/CIFAR/DATA/<class_label>/data_batch_<classlabel>_<variation_type>.h5
+Example
+1. Data for class label-0(airplane) and variation type-0(Original Image) 
+LBP_ConstraintPropogation/src/CIFAR/DATA/0/data_batch_0_0.h5
+2. Data for class label-1(automobile) and variation type-5(Original Image) 
+LBP_ConstraintPropogation/src/CIFAR/DATA/1/data_batch_1_5.h5
 
 ### Acknowledgment:
-I'd like to acknoweldge all the contributors who have worked on this repository from time to time, my special thanks to Prof Tahir Syed for his contribution to the idea and Sadaf Behlim, Alexis Thomas, Yameen Malik & Zaid Memon for their contribution in helping me write this code. 
+I'd like to acknoweldge all the contributors who have worked on this repository from time. My special thanks to Dr.Tahir Syed, Sadaf Behlim, Yameen Malik and Zaid Memon.
 
 If you encounter any issue running the code, or come across somthing you want to add, please do let me know. 

@@ -22,22 +22,22 @@ If you are using the code provided here in a publication, please cite our paper:
   
 ### Installing 
 
-1. Run the git clone command to copy the contents of folder to your local system, for instance : 
-git clone git@github.com:m-alishan/LBP_ConstraintPropogation.git
+1. Run the git clone command to copy the contents of folder to your local system, 
+<br/> for instance : git clone git@github.com:m-alishan/LBP_ConstraintPropogation.git
 2. navigate into the src directory, where you can see the requirements.txt file
-cd LBP_ConstraintPropogation/src
+<br/> cd LBP_ConstraintPropogation/src
 3. Run the following command to install all the dependencies required to run the code
-pip install -r requirements.txt
+<br/> pip install -r requirements.txt
 
 ### Generating Image 
 
 1. To generate the augmented images, place the source image in assets folder, for instance ./assets/lenna.png
 2. To generate image variations from local minima, call the following:
-    python Generator.py --type minima --input lenna.png
+    <br/> python Generator.py --type minima --input lenna.png
 3. To generate image variations from local maxima, call the following:
-    python Generator.py --type maxima --input lenna.png
+    <br/> python Generator.py --type maxima --input lenna.png
 4. To generate image variations from both minima and maxima, call the following:
-    python Generator.py --type all --input lenna.png
+    <br/> python Generator.py --type all --input lenna.png
 5. There will be an output image in the assets folder with lenna_minima.png / lenna_maxima.png / lenna_all.png
 
 Note : All the RGB images are converted to GS first and scaled to 64x64, the scaling is done due to performance.
@@ -55,13 +55,13 @@ Variations Generated from Local Maxima Expansion
 </p>
 
 ### Precomputed Results on CIFAR-10
-You can find precomputed results on CIFAR-10 in the CIFAR/DATA directory, following is the structure
-LBP_ConstraintPropogation/src/CIFAR/DATA/<class_label>/data_batch_<classlabel>_<variation_type>.h5
-Example
+You can find precomputed results on CIFAR-10 in the CIFAR/DATA directory, directory follows the sructure:
+<br/> LBP_ConstraintPropogation/src/CIFAR/DATA/<class_label>/data_batch_<classlabel>_<variation_type>.h5
+<br/> For Example
 1. Data for class label-0(airplane) and variation type-0(Original Image) 
-LBP_ConstraintPropogation/src/CIFAR/DATA/0/data_batch_0_0.h5
+<br/> LBP_ConstraintPropogation/src/CIFAR/DATA/0/data_batch_0_0.h5
 2. Data for class label-1(automobile) and variation type-5(Original Image) 
-LBP_ConstraintPropogation/src/CIFAR/DATA/1/data_batch_1_5.h5
+<br/> LBP_ConstraintPropogation/src/CIFAR/DATA/1/data_batch_1_5.h5
 
 ### Acknowledgment:
 I'd like to acknoweldge all the contributors who have worked on this repository from time. My special thanks to Dr.Tahir Syed, Sadaf Behlim, Yameen Malik and Zaid Memon.

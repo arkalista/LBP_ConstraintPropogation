@@ -64,6 +64,6 @@ You can find precomputed results on CIFAR-10 in the CIFAR/DATA directory, direct
 <br/> LBP_ConstraintPropogation/src/CIFAR/DATA/1/data_batch_1_5.h5
 
 ### Acknowledgment:
-I'd like to acknoweldge all the contributors who have worked on this repository from time. My special thanks to Dr.Tahir Syed, Sadaf Behlim, Yameen Malik and Zaid Memon.
+I'd like to acknoweldge all the contributors who have worked on this repository. My special thanks to Dr.Tahir Syed, Sadaf Behlim, Yameen Malik and Zaid Memon.
 
 If you encounter any issue running the code, or come across somthing you want to add, please do let me know. 

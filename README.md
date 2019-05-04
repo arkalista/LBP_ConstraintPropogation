@@ -29,7 +29,7 @@ If you are using the code provided here in a publication, please cite our paper:
 3. Run the following command to install all the dependencies required to run the code
 <br/> pip install -r requirements.txt
 
-### Generating Image 
+### Generating Images
 
 1. To generate the augmented images, place the source image in assets folder, for instance ./assets/lenna.png
 2. To generate image variations from local minima, call the following:

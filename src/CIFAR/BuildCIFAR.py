@@ -3,6 +3,7 @@ from keras.datasets import cifar10
 import numpy as np
 import deepdish as dd
 from MCAIncludes import *
+import os
 
 
 def rgb2gray(rgb):
@@ -40,83 +41,98 @@ def imgGenerator(grayImage):
             pass1_image_avg, pass2_image_avg, pass3_image_avg, pass4_image_avg, min_max_avg]
 
 
-(x_train, y_train), (x_test, y_test) = cifar10.load_data()
+def GenerateAllData(numRandomSamplesTrain=1,numRandomSamplesTest=1):
 
-data = x_train
-labels = y_train
+    (x_train, y_train), (x_test, y_test) = cifar10.load_data()
 
-print(data.shape)
-print(labels.shape)
+    data = x_train
+    labels = y_train
 
-print(x_test.shape)
-print(y_test.shape)
+    print(data.shape)
+    print(labels.shape)
 
-
-# Randomly selecting 670 samples from each class and generating 15 new contrast varying sample
-# numRandomSamples = 670
-numRandomSamples = 10
-
-for i in range(0, 10):
-
-    # initialize image set for all the 15 variations
-    _trainSet = {}
-    for h in range(0, 16):
-        _trainSet[h] = []
-
-    # filter labels of a given class , and draw a random sample of n images , images are stored in temp_data while
-    # labels on temp_labels
-    filtered_labels = np.where(labels == i)[0]
-    temp_labels = np.random.choice(filtered_labels, numRandomSamples)
-    temp_data = data[temp_labels]
-
-    # for each of the image in temp_data, convert it into grayscale and generate contrast variations
-    # for each of the variation append contrast variation into respective trainset {key:0 value: [list of images of
-    # variations with type 0]}
-    for j in range(0, len(temp_labels)):
-        grayImage = rgb2gray(temp_data[j])
-        imgLst = imgGenerator(grayImage)
-        _trainSet[0].append(grayImage)
-        for k in range(0, 15):
-            _trainSet[k + 1].append(imgLst[k])
-
-    # Now we have all the variation generated for a specific image class, we create a datastructure to store the
-    # training images and their labels
-    for p in range(0, 16):
-        _dataDict = {}
-
-        x_data = np.array(_trainSet[p])
-        print(x_data.shape)
-
-        _dataDict['Data'] = x_data
-        _dataDict['Labels'] = labels[temp_labels]
-
-        # Sample ./DATA/0/data_batch_0_3.h5
-        filename = './DATA/' + str(i) + '/data_batch_' + str(i) + '_' + str(p) + '.h5'
-        dd.io.save(filename, _dataDict, compression=None)
+    print(x_test.shape)
+    print(y_test.shape)
 
 
-numRandomSamples = 1000
+    # Randomly selecting numRandomSamplesTrain=1 samples from each class and generating 15 new contrast varying sample
 
-testData = []
-testLabels = []
+    for i in range(0, 10):
 
-for i in range(0, 10):
-    filtered_labels = np.where(y_test == i)[0]
-    temp_labels = np.random.choice(filtered_labels, numRandomSamples)
-    temp_data = x_test[temp_labels]
+        # initialize image set for all the 15 variations
+        _trainSet = {}
+        for h in range(0, 16):
+            _trainSet[h] = []
 
-    for j in range(0, len(temp_labels)):
-        grayImage = rgb2gray(temp_data[j])
-        testData.append(grayImage)
-        testLabels.append(y_test[temp_labels[j]])
+        # filter labels of a given class , and draw a random sample of n images , images are stored in temp_data while
+        # labels on temp_labels
+        filtered_labels = np.where(labels == i)[0]
+        temp_labels = np.random.choice(filtered_labels, numRandomSamplesTrain)
+        temp_data = data[temp_labels]
 
-_dataDict = {}
-_dataDict['Data'] = np.array(testData)
-_dataDict['Labels'] = np.array(testLabels)
+        # for each of the image in temp_data, convert it into grayscale and generate contrast variations
+        # for each of the variation append contrast variation into respective trainset {key:0 value: [list of images of
+        # variations with type 0]}
+        for j in range(0, len(temp_labels)):
+            grayImage = rgb2gray(temp_data[j])
+            imgLst = imgGenerator(grayImage)
+            _trainSet[0].append(grayImage)
+            for k in range(0, 15):
+                _trainSet[k + 1].append(imgLst[k])
 
-print(_dataDict['Data'].shape)
-print(_dataDict['Labels'].shape)
+        # Now we have all the variation generated for a specific image class, we create a datastructure to store the
+        # training images and their labels
+        for p in range(0, 16):
+            _dataDict = {}
 
-filename = './DATA/test/data_batch_test.h5'
-dd.io.save(filename, _dataDict, compression=None)
+            x_data = np.array(_trainSet[p])
+            print(x_data.shape)
+
+            _dataDict['Data'] = x_data
+            _dataDict['Labels'] = labels[temp_labels]
+
+            # Sample ./DATA/0/data_batch_0_3.h5
+            filedir = './DATA/' + str(i)
+            filename = filedir + '/data_batch_' + str(i) + '_' + str(p) + '.h5'
+            try:
+                os.makedirs(filedir)
+            except FileExistsError:
+                # directory already exists
+                pass
+            dd.io.save(filename, _dataDict, compression=None)
+
+
+    testData = []
+    testLabels = []
+
+    for i in range(0, 10):
+        filtered_labels = np.where(y_test == i)[0]
+        temp_labels = np.random.choice(filtered_labels, numRandomSamplesTest)
+        temp_data = x_test[temp_labels]
+
+        for j in range(0, len(temp_labels)):
+            grayImage = rgb2gray(temp_data[j])
+            testData.append(grayImage)
+            testLabels.append(y_test[temp_labels[j]])
+
+    _dataDict = {}
+    _dataDict['Data'] = np.array(testData)
+    _dataDict['Labels'] = np.array(testLabels)
+
+    print(_dataDict['Data'].shape)
+    print(_dataDict['Labels'].shape)
+
+    filedir = './DATA/test'
+    filename = filedir + '/data_batch_test.h5'
+    try:
+        os.makedirs(filedir)
+    except FileExistsError:
+        # directory already exists
+        pass
+    dd.io.save(filename, _dataDict, compression=None)
+
+
+
+GenerateAllData(1,1)
+# GenerateAllData(5000,1000) -- To run at office
 
